@@ -32,16 +32,71 @@ public sealed record WriteFileToolArguments(string Path, string Content);
 /// Arguments for editing a file by replacing one occurrence.
 /// </summary>
 /// <param name="Path">The file path, absolute or relative to the workspace root.</param>
-/// <param name="OldString">The unique string to replace.</param>
-/// <param name="NewString">The replacement content.</param>
-public sealed record EditFileToolArguments(string Path, string OldString, string NewString);
+/// <param name="OldString">The string to replace. Must appear exactly (byte-for-byte, including whitespace) in the file.</param>
+/// <param name="NewString">The replacement content. Must differ from <paramref name="OldString"/>.</param>
+/// <param name="ReplaceAll">
+/// When <see langword="true"/>, replaces every occurrence of <paramref name="OldString"/>.
+/// When <see langword="false"/> (default), <paramref name="OldString"/> must be unique in the file and only one replacement is performed.
+/// </param>
+public sealed record EditFileToolArguments(string Path, string OldString, string NewString, bool ReplaceAll = false);
 
 /// <summary>
-/// Structured result for write and edit file operations.
+/// A single edit operation applied atomically inside <see cref="MultiEditFileToolArguments"/>.
+/// </summary>
+/// <param name="OldString">The string to replace. Must appear in the file state produced by all prior edits in the batch.</param>
+/// <param name="NewString">The replacement content. Must differ from <paramref name="OldString"/>.</param>
+/// <param name="ReplaceAll">When <see langword="true"/>, replaces every occurrence; otherwise requires a unique match.</param>
+public sealed record EditFileOperation(string OldString, string NewString, bool ReplaceAll = false);
+
+/// <summary>
+/// Arguments for applying an atomic sequence of string replacements to a single workspace file.
+/// </summary>
+/// <param name="Path">The file path, absolute or relative to the workspace root.</param>
+/// <param name="Edits">The ordered list of edit operations to apply. Must contain at least one entry.</param>
+public sealed record MultiEditFileToolArguments(string Path, IReadOnlyList<EditFileOperation> Edits);
+
+/// <summary>
+/// Structured result for write file operations.
 /// </summary>
 /// <param name="Path">The normalized workspace-relative path.</param>
 /// <param name="Message">A concise operation summary.</param>
 public sealed record FileMutationToolResult(string Path, string Message);
+
+/// <summary>
+/// Structured result for single-file edit operations.
+/// </summary>
+/// <param name="Path">The normalized workspace-relative path.</param>
+/// <param name="Message">A concise operation summary.</param>
+/// <param name="ReplacementCount">The number of string occurrences replaced.</param>
+/// <param name="Snippet">A post-edit preview of the changed region with 1-based line numbers, or <see langword="null"/> when no preview is available.</param>
+/// <param name="SnippetStartLine">The first 1-based line number included in <paramref name="Snippet"/>; zero when no snippet is available.</param>
+/// <param name="SnippetEndLine">The last 1-based line number included in <paramref name="Snippet"/>; zero when no snippet is available.</param>
+public sealed record EditFileToolResult(
+    string Path,
+    string Message,
+    int ReplacementCount,
+    string? Snippet,
+    int SnippetStartLine,
+    int SnippetEndLine);
+
+/// <summary>
+/// Structured result for atomic multi-edit file operations.
+/// </summary>
+/// <param name="Path">The normalized workspace-relative path.</param>
+/// <param name="Message">A concise operation summary.</param>
+/// <param name="EditCount">The number of edit operations applied.</param>
+/// <param name="ReplacementCount">The total number of string occurrences replaced across all operations.</param>
+/// <param name="Snippet">A post-edit preview of the changed region with 1-based line numbers, or <see langword="null"/> when no preview is available.</param>
+/// <param name="SnippetStartLine">The first 1-based line number included in <paramref name="Snippet"/>; zero when no snippet is available.</param>
+/// <param name="SnippetEndLine">The last 1-based line number included in <paramref name="Snippet"/>; zero when no snippet is available.</param>
+public sealed record MultiEditFileToolResult(
+    string Path,
+    string Message,
+    int EditCount,
+    int ReplacementCount,
+    string? Snippet,
+    int SnippetStartLine,
+    int SnippetEndLine);
 
 /// <summary>
 /// Arguments for globbing files in the workspace.

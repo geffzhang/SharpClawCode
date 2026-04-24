@@ -28,6 +28,7 @@ namespace SharpClaw.Code.Tools.Models;
 /// <param name="PrimaryMode">Workflow mode forwarded to permission evaluation.</param>
 /// <param name="MutationRecorder">Optional recorder for reversible workspace file mutations.</param>
 /// <param name="ApprovalSettings">Optional bounded auto-approval settings forwarded to permission evaluation.</param>
+/// <param name="FileAccessTracker">Optional session-scoped tracker used to enforce read-before-edit semantics on file edit tools.</param>
 public sealed record ToolExecutionContext(
     string SessionId,
     string TurnId,
@@ -48,4 +49,5 @@ public sealed record ToolExecutionContext(
     IReadOnlyCollection<string>? TrustedMcpServerNames = null,
     PrimaryMode PrimaryMode = PrimaryMode.Build,
     IToolMutationRecorder? MutationRecorder = null,
-    ApprovalSettings? ApprovalSettings = null);
+    ApprovalSettings? ApprovalSettings = null,
+    IToolFileAccessTracker? FileAccessTracker = null);

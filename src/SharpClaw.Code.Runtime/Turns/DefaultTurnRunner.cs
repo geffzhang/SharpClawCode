@@ -18,7 +18,8 @@ public sealed class DefaultTurnRunner(
     IEnumerable<ISharpClawAgent> agents,
     PrimaryCodingAgent primaryCodingAgentFallback,
     IToolExecutor toolExecutor,
-    IPromptContextAssembler promptContextAssembler) : ITurnRunner
+    IPromptContextAssembler promptContextAssembler,
+    IToolFileAccessTracker? fileAccessTracker = null) : ITurnRunner
 {
     private readonly ISharpClawAgent[] agentList = agents.ToArray();
 
@@ -59,7 +60,8 @@ public sealed class DefaultTurnRunner(
             DelegatedTask: request.DelegatedTask,
             ConversationHistory: promptContext.ConversationHistory,
             IsInteractive: request.IsInteractive,
-            ApprovalSettings: request.ApprovalSettings);
+            ApprovalSettings: request.ApprovalSettings,
+            FileAccessTracker: fileAccessTracker);
 
         using var turnScope = new TurnActivityScope(session.Id, turn.Id, promptContext.Prompt);
         var sw = Stopwatch.StartNew();

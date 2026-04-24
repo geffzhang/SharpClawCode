@@ -26,6 +26,7 @@ namespace SharpClaw.Code.Agents.Models;
 /// </param>
 /// <param name="IsInteractive">Whether tool approvals can interact with the caller.</param>
 /// <param name="ApprovalSettings">Optional bounded auto-approval settings forwarded to tool execution.</param>
+/// <param name="FileAccessTracker">Optional session-scoped tracker forwarded to file edit tools to enforce read-before-edit semantics.</param>
 public sealed record AgentRunContext(
     string SessionId,
     string TurnId,
@@ -42,4 +43,5 @@ public sealed record AgentRunContext(
     IToolMutationRecorder? ToolMutationRecorder = null,
     IReadOnlyList<ChatMessage>? ConversationHistory = null,
     bool IsInteractive = true,
-    ApprovalSettings? ApprovalSettings = null);
+    ApprovalSettings? ApprovalSettings = null,
+    IToolFileAccessTracker? FileAccessTracker = null);

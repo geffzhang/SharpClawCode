@@ -58,7 +58,8 @@ public sealed class AgentFrameworkBridge(
             TrustedMcpServerNames: null,
             PrimaryMode: request.Context.PrimaryMode,
             MutationRecorder: request.Context.ToolMutationRecorder,
-            ApprovalSettings: request.Context.ApprovalSettings);
+            ApprovalSettings: request.Context.ApprovalSettings,
+            FileAccessTracker: request.Context.FileAccessTracker);
 
         // Map tool definitions from the registry to provider tool definitions
         var registryTools = await toolRegistry.ListAsync(

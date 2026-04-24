@@ -59,9 +59,11 @@ public static class ToolsServiceCollectionExtensions
 
     private static IServiceCollection AddSharpClawToolsCore(IServiceCollection services)
     {
+        services.AddSingleton<IToolFileAccessTracker, Services.InMemoryToolFileAccessTracker>();
         services.AddSingleton<ReadFileTool>();
         services.AddSingleton<WriteFileTool>();
         services.AddSingleton<EditFileTool>();
+        services.AddSingleton<MultiEditFileTool>();
         services.AddSingleton<GlobSearchTool>();
         services.AddSingleton<GrepSearchTool>();
         services.AddSingleton<BashTool>();
@@ -75,6 +77,7 @@ public static class ToolsServiceCollectionExtensions
         services.AddSingleton<ISharpClawTool>(serviceProvider => serviceProvider.GetRequiredService<ReadFileTool>());
         services.AddSingleton<ISharpClawTool>(serviceProvider => serviceProvider.GetRequiredService<WriteFileTool>());
         services.AddSingleton<ISharpClawTool>(serviceProvider => serviceProvider.GetRequiredService<EditFileTool>());
+        services.AddSingleton<ISharpClawTool>(serviceProvider => serviceProvider.GetRequiredService<MultiEditFileTool>());
         services.AddSingleton<ISharpClawTool>(serviceProvider => serviceProvider.GetRequiredService<GlobSearchTool>());
         services.AddSingleton<ISharpClawTool>(serviceProvider => serviceProvider.GetRequiredService<GrepSearchTool>());
         services.AddSingleton<ISharpClawTool>(serviceProvider => serviceProvider.GetRequiredService<BashTool>());

@@ -47,8 +47,10 @@ public sealed class ReadFileTool(IFileSystem fileSystem, IPathService pathServic
         var startLine = selectedLines.Length == 0 ? 0 : startIndex + 1;
         var endLine = selectedLines.Length == 0 ? 0 : endIndex;
         var formattedContent = string.Join(Environment.NewLine, selectedLines.Select((line, index) => $"{startLine + index}|{line}"));
+        var relativePath = pathResolver.ToRelativePath(context, fullPath);
+        context.FileAccessTracker?.RecordRead(context.SessionId, relativePath);
         var payload = new ReadFileToolResult(
-            Path: pathResolver.ToRelativePath(context, fullPath),
+            Path: relativePath,
             Exists: true,
             Content: formattedContent,
             StartLine: startLine,

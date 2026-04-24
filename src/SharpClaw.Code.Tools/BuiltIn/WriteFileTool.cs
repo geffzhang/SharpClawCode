@@ -42,6 +42,10 @@ public sealed class WriteFileTool(IFileSystem fileSystem, IPathService pathServi
 
         await fileSystem.WriteAllTextAsync(fullPath, arguments.Content, cancellationToken).ConfigureAwait(false);
 
+        // Treat the successful write as an implicit read-observation: the caller now has ground
+        // truth on the file contents, so a follow-up edit should be allowed without a redundant read.
+        context.FileAccessTracker?.RecordRead(context.SessionId, relative);
+
         context.MutationRecorder?.Record(
             new FileMutationOperation(
                 OperationId: $"op-{Guid.NewGuid():N}",
