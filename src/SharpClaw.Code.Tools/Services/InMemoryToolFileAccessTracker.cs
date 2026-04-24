@@ -10,14 +10,14 @@ namespace SharpClaw.Code.Tools.Services;
 /// </summary>
 public sealed class InMemoryToolFileAccessTracker : IToolFileAccessTracker
 {
-    private readonly ConcurrentDictionary<(string SessionId, string RelativePath), byte> reads = new();
+    private readonly ConcurrentDictionary<(string SessionId, string RelativePath), bool> reads = new();
 
     /// <inheritdoc />
     public void RecordRead(string sessionId, string relativePath)
     {
         ArgumentException.ThrowIfNullOrEmpty(sessionId);
         ArgumentException.ThrowIfNullOrEmpty(relativePath);
-        reads[(sessionId, relativePath)] = 0;
+        reads[(sessionId, relativePath)] = true;
     }
 
     /// <inheritdoc />
